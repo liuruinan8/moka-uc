@@ -22,9 +22,9 @@ spring:
             dialect: org.hibernate.dialect.MySQL5Dialect
 
     redis:
-      host: localhost
+      host: 10.10.4.140
       port: 6379
-      password: 1234567
+      password: dreamout
       database: 0
       pool:
         max-active: 8

@@ -1,14 +1,10 @@
 package com.zimokaka.uc.shrio.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.zimokaka.uc.redis.serialize.RedisObjectSerializer;
 import com.zimokaka.uc.shrio.cache.redis.RedisCacheManager;
 import com.zimokaka.uc.shrio.conf.ShiroConf;
 import com.zimokaka.uc.shrio.realm.MyShiroRealm;
 import com.zimokaka.uc.shrio.session.dao.RedisSessionDAO;
-import com.zimokaka.uc.shrio.session.mgt.TokenSessionManager;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -20,11 +16,17 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.core.RedisTemplate;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -33,10 +35,11 @@ import org.springframework.core.annotation.Order;
  *
  */
 @Configuration
-@Order(2)
 public class ShiroConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(ShiroConfiguration.class);
 
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
     /*@Bean
     public EhCacheManager getEhCacheManager() {
         EhCacheManager em = new EhCacheManager();
@@ -55,30 +58,35 @@ public class ShiroConfiguration {
     }
 
     @Bean
-    public MyShiroRealm myShiroRealm() {
+    public MyShiroRealm myShiroRealm(RedisCacheManager redisCacheManager) {
         MyShiroRealm myShiroRealm=new MyShiroRealm();
-        //myShiroRealm.setCacheManager(getEhCacheManager());
+        myShiroRealm.setCacheManager(redisCacheManager);
         return myShiroRealm;
     }
 
-    @Bean
-    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
+    @Bean(name = "lifecycleBeanPostProcessor")
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 
     @Bean
     public RedisCacheManager redisCacheManager() {
-        return new RedisCacheManager();
+        RedisCacheManager redisCacheManager=new RedisCacheManager();
+        //redisCacheManager.setRedisTemplate(redisTemplate);
+        return redisCacheManager;
     }
 
     @Bean
     public RedisSessionDAO redisSessionDAO(){
-        return new RedisSessionDAO();
+        redisTemplate.setValueSerializer(new RedisObjectSerializer());
+        RedisSessionDAO  sessionDAO=new RedisSessionDAO();
+        sessionDAO.setRedisTemplate(redisTemplate);
+        return sessionDAO;
     }
 
-    @Bean
+    @Bean(name = "sessionManager")
     public SessionManager sessionManager() {
-        if(getSTShiroConf().isOpenToken()){
+        /*if(getSTShiroConf().isOpenToken()){
             DefaultSessionManager sessionManager = new TokenSessionManager();
             sessionManager.setSessionDAO(redisSessionDAO());
             sessionManager.setGlobalSessionTimeout(getSTShiroConf().getSessionTimeout());
@@ -87,7 +95,7 @@ public class ShiroConfiguration {
             //sessionManager.setSessionIdCookieEnabled(true);
             //sessionManager.setSessionIdCookie(sessionIdCookie());
             return sessionManager;
-        }else{
+        }else{*/
             DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
             sessionManager.setSessionDAO(redisSessionDAO());
             sessionManager.setGlobalSessionTimeout(getSTShiroConf().getSessionTimeout());
@@ -96,11 +104,11 @@ public class ShiroConfiguration {
             sessionManager.setSessionIdCookieEnabled(true);
             sessionManager.setSessionIdCookie(sessionIdCookie());
             return sessionManager;
-        }
+        /*}*/
     }
 
     //设置cookie
-    @Bean
+    @Bean(name = "sessionIdCookie")
     public Cookie sessionIdCookie(){
         Cookie sessionIdCookie=new SimpleCookie("STID");
         sessionIdCookie.setMaxAge(-1);
@@ -108,11 +116,11 @@ public class ShiroConfiguration {
         return sessionIdCookie;
     }
 
-    @Bean
+    @Bean(name = "securityManager")
     public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //设置realm
-        securityManager.setRealm(myShiroRealm());
+        securityManager.setRealm(myShiroRealm(redisCacheManager()));
         // session管理器
         securityManager.setSessionManager(sessionManager());
         //设置cache
@@ -134,7 +142,7 @@ public class ShiroConfiguration {
         return daap;
     }
 
-    @Bean
+    @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean getShiroFilterFactoryBean() {
         Map<String, String> filterChainDefinitionMap = new HashMap<String, String>();
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();

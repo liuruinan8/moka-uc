@@ -4,6 +4,7 @@ import com.zimokaka.uc.uac.user.po.UcUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class UserRepositoryTest {
 
     @Autowired
+    @Qualifier("userRepository")
     private UserRepository userRepository;
 
     @Test
@@ -25,7 +27,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindOne() {
-        UcUser user = this.userRepository.findOne(1);
+        UcUser user = this.userRepository.findOne("1");
         System.out.println(user);
     }
 
@@ -41,6 +43,6 @@ public class UserRepositoryTest {
 
     @Test
     public void testDelete() {
-        this.userRepository.delete(1);
+        this.userRepository.delete("1");
     }
 }

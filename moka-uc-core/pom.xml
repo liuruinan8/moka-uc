@@ -20,14 +20,8 @@
             <groupId>com.zimokaka</groupId>
             <artifactId>moka-uc-api</artifactId>
             <version>${moka-uc.version}</version>
+            <scope>compile</scope>
         </dependency>
+
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>
