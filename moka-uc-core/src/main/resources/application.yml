@@ -65,7 +65,6 @@ zimokaka:
            - /login
            - /regist
            - /statics/**
-           - /checkLogin
        #跨域配置
        allowedOrigins:
            - /**

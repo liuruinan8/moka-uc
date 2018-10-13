@@ -65,17 +65,17 @@ public class MyShiroRealm extends AuthorizingRealm {
         Map user= UACUtil.getInstance().getUserMapByUid(token.getUsername());
         if(user!=null){
             // 若存在，将此用户存放到登录认证info中，无需自己做密码对比，Shiro会为我们进行密码对比校验
-            return new SimpleAuthenticationInfo(user.get("uid"), user.get("password"),getName());
+            return new SimpleAuthenticationInfo(user.get("uid"), user.get("password"), getName());
         }
         return null;
     }
 
     /**
      * 设置加密方式
-     */
+     *//*
     @PostConstruct
     public void initCredentialsMatcher() {
         HashedCredentialsMatcher matcher=new HashedCredentialsMatcher(ALGORITHM);
         setCredentialsMatcher(matcher);
-    }
+    }*/
 }
