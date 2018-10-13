@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author mengxr
- * @Description: Native SessionManager
+ * @Description: TokenSessionManager
  * @date 2018/5/31 下午4:00
  */
 public class TokenSessionManager extends DefaultSessionManager implements WebSessionManager {

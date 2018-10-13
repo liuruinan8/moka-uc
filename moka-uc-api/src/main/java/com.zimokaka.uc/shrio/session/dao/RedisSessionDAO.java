@@ -1,96 +1,74 @@
 package com.zimokaka.uc.shrio.session.dao;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
+import com.zimokaka.uc.shrio.conf.ShiroConf;
 import com.zimokaka.uc.shrio.constant.RedisConstant;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.session.UnknownSessionException;
-import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
+import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
-@Service
+@Component
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class RedisSessionDAO extends AbstractSessionDAO {
+public class RedisSessionDAO extends EnterpriseCacheSessionDAO {
 
-    // Session超时时间，单位为毫秒
-    private long expireTime = 120000;
+    private static Logger logger = LoggerFactory.getLogger(RedisSessionDAO.class);
+    @Autowired
+    private ShiroConf shiroConf;
 
-    @Resource(name="redisTemplateObj")
-    private RedisTemplate redisTemplate;// Redis操作类，目前有两个这个是默认的 还可以指定为
+    private static String prefix = RedisConstant.SHIRO_SESSION+":";
 
-    public RedisSessionDAO() {
-        super();
-    }
+    @Resource
+    public RedisTemplate<String, Object> redisTemplate;
 
-    public RedisSessionDAO(long expireTime, RedisTemplate redisTemplate) {
-        super();
-        this.expireTime = expireTime;
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
-
-    @Override // 更新session
-    public void update(Session session) throws UnknownSessionException {
-        System.out.println("===============update================");
-        if (session == null || session.getId() == null) {
-            return;
-        }
-        session.setTimeout(expireTime);
-        redisTemplate.opsForValue().set(session.getId(), session, expireTime, TimeUnit.MILLISECONDS);
-    }
-
-    @Override // 删除session
-    public void delete(Session session) {
-        System.out.println("===============delete================");
-        if (null == session) {
-            return;
-        }
-        redisTemplate.opsForValue().getOperations().delete(session.getId());
-    }
-
-    @Override// 获取活跃的session，可以用来统计在线人数，如果要实现这个功能，可以在将session加入redis时指定一个session前缀，统计的时候则使用keys("session-prefix*")的方式来模糊查找redis中所有的session集合
-    public Collection<Session> getActiveSessions() {
-        System.out.println("==============getActiveSessions=================");
-        return redisTemplate.keys(RedisConstant.SHIRO_CACHE);
-    }
-
-    @Override// 加入session
+    // 创建session，保存到数据库
+    @Override
     protected Serializable doCreate(Session session) {
-        System.out.println("===============doCreate================");
-        Serializable sessionId = this.generateSessionId(session);
-        this.assignSessionId(session, sessionId);
-
-        redisTemplate.opsForValue().set(session.getId(), session, expireTime, TimeUnit.MILLISECONDS);
+        Serializable sessionId = super.doCreate(session);
+        logger.debug("创建session:{}", session.getId());
+        redisTemplate.opsForValue().set(prefix + sessionId.toString(), session,shiroConf.getSessionTimeout(),TimeUnit.SECONDS);
         return sessionId;
     }
 
-    @Override// 读取session
+    // 获取session
+    @Override
     protected Session doReadSession(Serializable sessionId) {
-        System.out.println("==============doReadSession=================");
-        if (sessionId == null) {
-            return null;
+        logger.debug("获取session:{}", sessionId);
+        // 先从缓存中获取session，如果没有再去数据库中获取
+        Session session = super.doReadSession(sessionId);
+        if (session == null) {
+            session = (Session) redisTemplate.opsForValue().get(prefix + sessionId.toString());
         }
-        return (Session) redisTemplate.opsForValue().get(sessionId);
+        return session;
     }
 
-    public long getExpireTime() {
-        return expireTime;
+    // 更新session的最后一次访问时间
+    @Override
+    protected void doUpdate(Session session) {
+        super.doUpdate(session);
+        logger.debug("获取session:{}", session.getId());
+        String key = prefix + session.getId().toString();
+        if (!redisTemplate.hasKey(key)) {
+            redisTemplate.opsForValue().set(key, session);
+        }
+        redisTemplate.expire(key, shiroConf.getSessionTimeout(), TimeUnit.SECONDS);
     }
 
-    public void setExpireTime(long expireTime) {
-        this.expireTime = expireTime;
+    // 删除session
+    @Override
+    protected void doDelete(Session session) {
+        logger.debug("删除session:{}", session.getId());
+        super.doDelete(session);
+        redisTemplate.delete(prefix + session.getId().toString());
     }
 
-    public RedisTemplate getRedisTemplate() {
-        return redisTemplate;
-    }
-
-    public void setRedisTemplate(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 }

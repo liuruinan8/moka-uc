@@ -16,14 +16,12 @@ public class ShiroCache<K, V> implements Cache<K, V> {
 
     private static final String REDIS_SHIRO_CACHE =RedisConstant.SHIRO_CACHE;
     private String cacheKey;
-    @Resource(name="redisTemplateObj")
     private RedisTemplate<K, V> redisTemplate;
     private long globExpire = 1800;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public ShiroCache(String name) {
         this.cacheKey = REDIS_SHIRO_CACHE+":"+ name + ":";
-        this.redisTemplate = redisTemplate;
     }
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public ShiroCache(String name, RedisTemplate redisTemplate) {
