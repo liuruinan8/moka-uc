@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service("userServiceImpl")
 public class UserServiceImpl implements IUserService {
@@ -19,8 +18,8 @@ public class UserServiceImpl implements IUserService {
 
     public void insert() {
         UcUser user = new UcUser();
-        user.setName("管理员");
-        user.setUid("1");
+        //user.setName("管理员");
+       // user.setUid("1");
         //UcUser result = this.userRepository.save(user);
        // System.out.println(result);
     }

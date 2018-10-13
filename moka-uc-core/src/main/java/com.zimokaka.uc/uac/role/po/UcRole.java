@@ -1,54 +1,64 @@
 package com.zimokaka.uc.uac.role.po;
 
 import com.zimokaka.uc.uac.permission.po.UcPermission;
-import com.zimokaka.uc.uac.user.po.UcUser;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * @description 角色信息实体类
+ * @author Nicky
+ * @date 2017年3月16日
+ */
+@Table(name="uc_role")
 @Entity
-public class UcRole implements Serializable {
+public class UcRole implements Serializable{
+
+    /** 角色Id**/
+    private int roleId;
+
+    /** 角色描述**/
+    private String roleDesc;
+
+    /** 角色名称**/
+    private String roleName;
+
+    /** 角色标志**/
+    private String role;
+
+    private Set<UcPermission> permissions = new HashSet<UcPermission>();
+
     @Id
-    private String id; // 编号
-    private String role; // 角色标识程序中判断使用,如"admin",这个是唯一的:
-    private String description; // 角色描述,UI界面显示使用
-    private Boolean available = Boolean.FALSE; // 是否可用,如果不可用将不会添加给用户
-
-    //角色 -- 权限关系：多对多关系;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "UcRolePermission", joinColumns = {@JoinColumn(name = "roleId")}, inverseJoinColumns = {@JoinColumn(name = "permissionId")})
-    private List<UcPermission> permissions;
-
-    // 用户 - 角色关系定义;
-    @ManyToMany
-    @JoinTable(name = "UcUserRole", joinColumns = {@JoinColumn(name = "roleId")}, inverseJoinColumns = {@JoinColumn(name = "uid")})
-    private List<UcUser> userInfos;// 一个角色对应多个用户
-
-    public List<UcPermission> getPermissions() {
-        return permissions;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void setPermissions(List<UcPermission> permissions) {
-        this.permissions = permissions;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
-    public List<UcUser> getUserInfos() {
-        return userInfos;
+    @Column(length=100)
+    public String getRoleDesc() {
+        return roleDesc;
     }
 
-    public void setUserInfos(List<UcUser> userInfos) {
-        this.userInfos = userInfos;
+    public void setRoleDesc(String roleDesc) {
+        this.roleDesc = roleDesc;
     }
 
-    public String getId() {
-        return id;
+    @Column(length=100)
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
+    @Column(length=100)
     public String getRole() {
         return role;
     }
@@ -57,20 +67,26 @@ public class UcRole implements Serializable {
         this.role = role;
     }
 
-    public String getDescription() {
-        return description;
+    //修改cascade策略为级联关系
+    @OneToMany(targetEntity=UcPermission.class,cascade=CascadeType.MERGE,fetch=FetchType.EAGER)
+    @JoinTable(name="uc_role_permission", joinColumns=@JoinColumn(name="roleId",referencedColumnName="roleId"), inverseJoinColumns=@JoinColumn(name="permissionId",referencedColumnName="id",unique=true))
+    public Set<UcPermission> getPermissions() {
+        return permissions;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPermissions(Set<UcPermission> permissions) {
+        this.permissions = permissions;
     }
 
-    public Boolean getAvailable() {
-        return available;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UcRole) {
+            UcRole role = (UcRole) obj;
+            return this.roleId==(role.getRoleId())
+                    && this.roleName.equals(role.getRoleName())
+                    && this.roleDesc.equals(role.getRoleDesc())
+                    && this.role.equals(role.getRole());
+        }
+        return super.equals(obj);
     }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
-
 }

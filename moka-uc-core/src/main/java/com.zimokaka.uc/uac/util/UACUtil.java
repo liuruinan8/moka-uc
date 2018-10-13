@@ -40,9 +40,9 @@ public class UACUtil {
         UcUser ucUser = userServiceImpl.getUserMapByUid(uid);
         Map map = new HashMap();
         if(ucUser!=null){
-            map.put("uid",ucUser.getUid());
+            map.put("username",ucUser.getUsername());
             map.put("password",ucUser.getPassword());
-            map.put("salt",ucUser.getSalt());
+            map.put("salt","");
         }
         return map;
     }

@@ -1,98 +1,94 @@
 package com.zimokaka.uc.uac.permission.po;
 
+import com.zimokaka.uc.uac.menu.po.UcMenu;
+import com.zimokaka.uc.uac.operation.po.UcOperation;
 
-import com.zimokaka.uc.uac.role.po.UcRole;
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+/**
+ * @description 权限操作的Vo类
+ * @author Nicky
+ * @date 2017年3月6日
+ */
+@Table(name="uc_permission")
 @Entity
 public class UcPermission implements Serializable {
+
+    private int id;
+    private String permissionDesc;
+    private String name;
+    private static final long serialVersionUID = 1L;
+
+    private UcMenu menu;
+
+    private Set<UcOperation> operations = new HashSet<UcOperation>();
+
+    public UcPermission() {
+        super();
+    }
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private String id;//主键.
-    private String name;//名称.
-    @Column(columnDefinition = "enum('menu','button')")
-    private String resourceType;//资源类型，[menu|button]
-    private String url;//资源路径.
-    private String permission; //权限字符串,menu例子：role:*，button例子：role:create,role:update,role:delete,role:view
-    private Long parentId; //父编号
-    private String parentIds; //父编号列表
-    private Boolean available = Boolean.FALSE;
-    @ManyToMany
-    @JoinTable(name = "UcRolePermission", joinColumns = {@JoinColumn(name = "permissionId")}, inverseJoinColumns = {@JoinColumn(name = "roleId")})
-    private List<UcRole> roles;
-
-    public List<UcRole> getRoles() {
-        return roles;
+    public int getId() {
+        return this.id;
     }
 
-    public void setRoles(List<UcRole> roles) {
-        this.roles = roles;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
+    @Column(length=100)
+    public String getPermissionDesc() {
+        return permissionDesc;
+    }
+
+    public void setPermissionDesc(String permissionDesc) {
+        this.permissionDesc = permissionDesc;
+    }
+
+
+
+    @Column(length=100)
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getResourceType() {
-        return resourceType;
+    @OneToOne(targetEntity=UcMenu.class,cascade=CascadeType.REFRESH,fetch=FetchType.EAGER)
+    @JoinColumn(name="menuId",referencedColumnName="menuId")
+    public UcMenu getMenu() {
+        return menu;
     }
 
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
+    public void setMenu(UcMenu menu) {
+        this.menu = menu;
     }
 
-    public String getUrl() {
-        return url;
+    @ManyToMany(targetEntity=UcOperation.class,cascade=CascadeType.MERGE,fetch=FetchType.EAGER)
+    @JoinTable(name="uc_permission_operation",joinColumns=@JoinColumn(name="permissionId",referencedColumnName="id"),inverseJoinColumns=@JoinColumn(name="operationId",referencedColumnName="id"))
+    public Set<UcOperation> getOperations() {
+        return operations;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setOperations(Set<UcOperation> operations) {
+        this.operations = operations;
     }
-
-    public String getPermission() {
-        return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getParentIds() {
-        return parentIds;
-    }
-
-    public void setParentIds(String parentIds) {
-        this.parentIds = parentIds;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
-
 }

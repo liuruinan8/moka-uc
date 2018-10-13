@@ -20,8 +20,8 @@ public class UserRepositoryTest {
     @Test
     public void testInsert() {
         UcUser user = new UcUser();
-        user.setName("管理员");
-        user.setUid("1");
+        //user.setName("管理员");
+        //user.setUid("1");
         //UcUser result = this.userServiceImpl.save(user);
         //System.out.println(result);
     }
@@ -35,8 +35,8 @@ public class UserRepositoryTest {
     @Test
     public void testUpdate() {
         UcUser user = new UcUser();
-        user.setUid("1");
-        user.setName("管理员");
+        //user.setUid("1");
+       // user.setName("管理员");
         user.setPassword("控制权限");
        // UcUser result = this.userServiceImpl.save(user);
        // System.out.println(result);
