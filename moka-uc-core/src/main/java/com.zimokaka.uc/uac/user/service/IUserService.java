@@ -9,5 +9,5 @@ import java.util.Map;
 public interface IUserService {
     public List<UcUser> findAll();
 
-    UcUser getUserMapByUid(String uid);
+    UcUser findByUsername(String uid);
 }

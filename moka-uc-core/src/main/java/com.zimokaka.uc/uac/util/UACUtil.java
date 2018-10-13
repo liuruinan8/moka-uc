@@ -35,9 +35,9 @@ public class UACUtil {
        return uacUtil;
     }
 
-    public Map getUserMapByUid(String uid){
+    public Map findByUsername(String uid){
 
-        UcUser ucUser = userServiceImpl.getUserMapByUid(uid);
+        UcUser ucUser = userServiceImpl.findByUsername(uid);
         Map map = new HashMap();
         if(ucUser!=null){
             map.put("username",ucUser.getUsername());

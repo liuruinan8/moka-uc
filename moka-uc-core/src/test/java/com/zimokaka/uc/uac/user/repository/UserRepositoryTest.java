@@ -28,7 +28,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindOne() {
-        UcUser user = this.userServiceImpl.getUserMapByUid("1");
+        UcUser user = this.userServiceImpl.findByUsername("1");
         System.out.println(user);
     }
 

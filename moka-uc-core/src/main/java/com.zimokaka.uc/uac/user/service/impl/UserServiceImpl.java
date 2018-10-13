@@ -31,7 +31,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UcUser getUserMapByUid(String uid) {
-        return this.userRepository.findOne(uid);
+    public UcUser findByUsername(String uid) {
+        return this.userRepository.findByUsername(uid);
     }
 }
