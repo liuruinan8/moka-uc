@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title,links,styles)">
+    <meta charset="utf-8"/>
+    <!--<title th:replace="${title}">The awesome application</title>
+-->
+    <!--全局通用框架样式 begin-->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <link rel="stylesheet" th:href="@{/statics/css/bootstrap/bootstrap.min.css}"/>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script th:src="@{/statics/js/html5shiv/html5shiv.min.js}"></script>
+    <script th:src="@{/statics/js/respond/respond.min.js}"></script>
+    <![endif]-->
+    <!--全局通用框架样式 end-->
+    <!--<th:block th:replace="${links}" />-->
+   <!-- <th:block th:replace="${styles}" />-->
+</head>
+</html>

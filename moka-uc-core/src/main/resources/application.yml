@@ -33,6 +33,14 @@ spring:
         min-idle: 0
       timeout: 0
 
+    thymeleaf:
+      cache: true
+      prefix: classpath:/templates/
+      suffix: .html
+      mode: HTML5
+      encoding: UTF-8
+      content-type: text/html
+
 eureka:
     instance:
         instance-id: moka-uc-8080
@@ -56,6 +64,8 @@ zimokaka:
        sysanon:
            - /login
            - /regist
+           - /statics/**
+           - /checkLogin
        #跨域配置
        allowedOrigins:
            - /**

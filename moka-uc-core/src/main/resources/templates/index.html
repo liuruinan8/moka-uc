@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/common_header :: common_header('login','','')">
+</head>
+<body>
+<div class="container">
+    欢迎,<span th:text="${userName}"></span>登录
+</div>
+<div th:replace="common/common_foot :: foot"></div>
+</body>
+</html>

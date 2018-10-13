@@ -1,6 +1,7 @@
 package com.zimokaka.uc.uac.user.repository;
 
 import com.zimokaka.uc.uac.user.po.UcUser;
+import com.zimokaka.uc.uac.user.service.IUserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +14,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class UserRepositoryTest {
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository;
+    @Qualifier("userServiceImpl")
+    private IUserService userServiceImpl;
 
     @Test
     public void testInsert() {
         UcUser user = new UcUser();
         user.setName("管理员");
         user.setUid("1");
-        UcUser result = this.userRepository.save(user);
-        System.out.println(result);
+        //UcUser result = this.userServiceImpl.save(user);
+        //System.out.println(result);
     }
 
     @Test
     public void testFindOne() {
-        UcUser user = this.userRepository.findOne("1");
+        UcUser user = this.userServiceImpl.getUserMapByUid("1");
         System.out.println(user);
     }
 
@@ -37,12 +38,13 @@ public class UserRepositoryTest {
         user.setUid("1");
         user.setName("管理员");
         user.setPassword("控制权限");
-        UcUser result = this.userRepository.save(user);
-        System.out.println(result);
+       // UcUser result = this.userServiceImpl.save(user);
+       // System.out.println(result);
     }
 
     @Test
     public void testDelete() {
-        this.userRepository.delete("1");
+
+        //this.userServiceImpl.delete("1");
     }
 }
