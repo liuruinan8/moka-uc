@@ -1,8 +1,30 @@
+server:
+    port: 8080
 spring:
+    application:
+        name: moka-uc
+
+    datasource:
+      url: jdbc:mysql://localhost:3306/test
+      username: root
+      password: root
+      driver-class-name: com.mysql.jdbc.Driver
+
+    jpa:
+      database: mysql
+      show-sql: true
+      hibernate:
+        ddl-auto: update
+        naming:
+          strategy: org.hibernate.cfg.DefaultComponentSafeNamingStrategy
+      properties:
+         hibernate:
+            dialect: org.hibernate.dialect.MySQL5Dialect
+
     redis:
-      host: localhost
+      host: 10.10.4.140
       port: 6379
-      password: 1234567
+      password: dreamout
       database: 0
       pool:
         max-active: 8
@@ -11,6 +33,21 @@ spring:
         min-idle: 0
       timeout: 0
 
+    thymeleaf:
+      cache: true
+      prefix: classpath:/templates/
+      suffix: .html
+      mode: HTML5
+      encoding: UTF-8
+      content-type: text/html
+
+eureka:
+    instance:
+        instance-id: moka-uc-8080
+        prefer-ip-address: true # 访问路径可以显示 IP
+    client:
+        service-url:
+            defaultZone: http://localhost:9000/eureka/  # 注册中心访问地址
 #Shiro配置
 zimokaka:
   shiro:
@@ -27,6 +64,7 @@ zimokaka:
        sysanon:
            - /login
            - /regist
+           - /statics/**
        #跨域配置
        allowedOrigins:
            - /**

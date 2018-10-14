@@ -1,6 +1,10 @@
 package com.zimokaka.uc.shrio.constant;
 
 public class RedisConstant {
+
+    public static final String REDIS_USER="MOKA_REDIS_USER";
+
+
     public static final String SHIRO_SESSION="SHIRO_SESSION";
     public static final String SHIRO_CACHE ="SHIRO_CACHE" ;
     //最大市场 默认2m

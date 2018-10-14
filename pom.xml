@@ -12,7 +12,6 @@
         <module>moka-uc-api</module>
         <module>moka-uc-core</module>
         <module>moka-uc-client</module>
-        <module>../moka-app-parent</module>
     </modules>
 
     <name>moka-uc-parent</name>
@@ -104,8 +103,15 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+        </dependency>
     </dependencies>
-    <build>
+    <!--<build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -118,7 +124,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
-    </build>
+    </build>-->
 </project>

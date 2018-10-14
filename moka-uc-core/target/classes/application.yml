@@ -22,7 +22,6 @@ spring:
             dialect: org.hibernate.dialect.MySQL5Dialect
 
     redis:
-      host: 10.10.4.140
       port: 6379
       password: dreamout
       database: 0
@@ -32,6 +31,8 @@ spring:
         max-idle: 500
         min-idle: 0
       timeout: 0
+      host: 10.10.4.140
+      hostName: 10.10.4.140
 
     thymeleaf:
       cache: true

@@ -2,6 +2,7 @@ package com.zimokaka.uc.redis.config;
 
 import com.zimokaka.uc.redis.serialize.RedisObjectSerializer;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ import redis.clients.jedis.JedisPoolConfig;
 @EnableAutoConfiguration
 public class RedisConfig {
     private static Logger logger = Logger.getLogger(RedisConfig.class);
+    @Value("${spring.redis.host}")
+    private String redisHost;
 
     @Bean
     @ConfigurationProperties(prefix = "spring.redis")
@@ -32,11 +35,12 @@ public class RedisConfig {
         JedisConnectionFactory factory = new JedisConnectionFactory();
         JedisPoolConfig config = getRedisConfig();
         factory.setPoolConfig(config);
+        factory.setHostName(redisHost);
         logger.info("JedisConnectionFactory bean init success.");
         return factory;
     }
 
-    @Bean
+    @Bean(value = "mokaRedisTemplate")
     public RedisTemplate<?, ?> getRedisTemplate() {
         RedisTemplate<?, ?> template = new StringRedisTemplate(getConnectionFactory());
         template.setValueSerializer(new RedisObjectSerializer());

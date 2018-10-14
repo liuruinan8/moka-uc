@@ -2,6 +2,7 @@ package com.zimokaka.uc.shrio.conf;
 
 import java.util.List;
 
+
 public class ShiroConf {
     private String  cookiePath;
     private String  successUrl;

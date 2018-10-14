@@ -1,10 +1,12 @@
 package com.zimokaka.uc.redis.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zimokaka.uc.redis.serialize.RedisObjectSerializer;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -15,9 +17,24 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unchecked")
 @Component
 public class RedisUtil {
-    @SuppressWarnings("rawtypes")
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
+
+    private static RedisUtil redisUtil;
+
+    // 非Controller 注入方式
+    @PostConstruct
+    public void init() {
+        redisUtil = this;
+        redisUtil.redisTemplate = this.redisTemplate;
+        redisUtil.redisTemplate.setValueSerializer(new RedisObjectSerializer());
+    }
+    public static RedisUtil getInstance(){
+        if(redisUtil == null){
+            redisUtil = new RedisUtil();
+        }
+        return redisUtil;
+    }
     /**
      * 批量删除对应的value
      *
@@ -35,8 +52,10 @@ public class RedisUtil {
      */
     public void removePattern(final String pattern) {
         Set<Serializable> keys = redisTemplate.keys(pattern);
-        if (keys.size() > 0)
+        if(keys.size() > 0){
             redisTemplate.delete(keys);
+        }
+
     }
     /**
      * 删除对应的value
